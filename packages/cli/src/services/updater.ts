@@ -49,7 +49,7 @@ const decodeManifestVersion = Schema.decodeUnknownOption(
 )
 
 const installNames: Record<Method, string> = {
-  curl: "The OpenCode installer",
+  curl: "The Saim CLI installer",
   npm: "npm",
   pnpm: "pnpm",
   bun: "Bun",
@@ -244,8 +244,8 @@ const make = Effect.gen(function* () {
     if (bash && (yield* fs.exists(bash).pipe(Effect.orElseSucceed(() => false)))) return bash
     return yield* Effect.fail(
       new UpgradeError({
-        title: "Git Bash is required to update OpenCode",
-        detail: "The OpenCode installer runs with Git Bash on Windows, and it was not found.",
+        title: "Git Bash is required to update The Saim CLI",
+        detail: "The Saim CLI installer runs with Git Bash on Windows, and it was not found.",
         retry: "Install Git for Windows or set OPENCODE_GIT_BASH_PATH, then run opencode upgrade again.",
       }),
     )
@@ -329,7 +329,7 @@ const make = Effect.gen(function* () {
       catch: (cause) =>
         new UpgradeError(
           {
-            title: "Could not check for OpenCode updates",
+            title: "Could not check for The Saim CLI updates",
             detail: errorDetail(cause),
             retry: "Check your network, then run opencode upgrade again.",
           },
@@ -339,7 +339,7 @@ const make = Effect.gen(function* () {
     if (!response.ok)
       return yield* Effect.fail(
         new UpgradeError({
-          title: "Could not check for OpenCode updates",
+          title: "Could not check for The Saim CLI updates",
           detail: `The update service returned HTTP ${response.status}.`,
           retry: "Try again in a few minutes.",
         }),
@@ -350,7 +350,7 @@ const make = Effect.gen(function* () {
         catch: (cause) =>
           new UpgradeError(
             {
-              title: "Could not read the OpenCode update information",
+              title: "Could not read The Saim CLI update information",
               detail: errorDetail(cause),
               retry: "Try again in a few minutes.",
             },
@@ -362,7 +362,7 @@ const make = Effect.gen(function* () {
     if (!version || !packageName)
       return yield* Effect.fail(
         new UpgradeError({
-          title: "Could not read the OpenCode update information",
+          title: "Could not read The Saim CLI update information",
           detail: "The update service returned incomplete release information.",
           retry: "Try again in a few minutes.",
         }),
@@ -375,7 +375,7 @@ const make = Effect.gen(function* () {
     const failure = (detail: string, cause?: unknown) =>
       new UpgradeError(
         {
-          title: "Could not check for OpenCode updates",
+          title: "Could not check for The Saim CLI updates",
           detail,
           command: ["winget", "search", ...wingetArgs].join(" "),
           retry: "Fix the issue above, then run opencode upgrade again.",
@@ -407,10 +407,10 @@ const make = Effect.gen(function* () {
 
   const managedError = (owner: { name: string; command: string }, target: string) =>
     new UpgradeError({
-      title: `OpenCode is managed by ${owner.name}`,
-      detail: `This copy was installed with ${owner.name}, which keeps its own record of the installed version, so OpenCode won't update it directly.`,
+      title: `The Saim CLI is managed by ${owner.name}`,
+      detail: `This copy was installed with ${owner.name}, which keeps its own record of the installed version, so The Saim CLI won't update it directly.`,
       command: `${owner.command}${target}`,
-      retry: "Run the command above, then restart OpenCode.",
+      retry: "Run the command above, then restart The Saim CLI.",
     })
 
   const managedMessage = (error: UpgradeError) => `${error.title}. Update it with ${error.command}`
@@ -456,7 +456,7 @@ const make = Effect.gen(function* () {
     const failure = (detail: string, cause?: unknown) =>
       new UpgradeError(
         {
-          title: input.title ?? `${installNames[input.method]} could not install OpenCode`,
+          title: input.title ?? `${installNames[input.method]} could not install The Saim CLI`,
           detail,
           command: (input.displayCommand ?? input.command).join(" "),
           retry: input.retry ?? "Fix the issue above, then run opencode upgrade again.",
@@ -516,7 +516,7 @@ const make = Effect.gen(function* () {
     }
     yield* Effect.scoped(
       Effect.gen(function* () {
-        // Other OpenCode processes may be installing at the same time. Wait longer than the
+        // Other The Saim CLI processes may be installing at the same time. Wait longer than the
         // slowest install (curl runs two 5-minute commands).
         yield* flock.acquire("cli-upgrade", undefined, { timeoutMs: Duration.toMillis("15 minutes") })
         if (method === "bun") {
@@ -541,7 +541,7 @@ const make = Effect.gen(function* () {
             method,
             command: ["curl", "-fsSL", "-o", installer, "https://opencode.ai/v2/install"],
             displayCommand: ["curl", "-fsSL", "https://opencode.ai/v2/install"],
-            title: "Could not download the OpenCode installer",
+            title: "Could not download The Saim CLI installer",
             retry: "Check your network, then run opencode upgrade again.",
           })
           return yield* retaining(
@@ -550,7 +550,7 @@ const make = Effect.gen(function* () {
               method,
               command: [bash, installer, "--version", version, "--no-modify-path"],
               displayCommand: ["opencode", "upgrade", version, "--method", "curl"],
-              title: "The OpenCode installer failed",
+              title: "The Saim CLI installer failed",
             }),
           )
         }
@@ -579,7 +579,7 @@ const make = Effect.gen(function* () {
           ? cause
           : new UpgradeError(
               {
-                title: "Could not prepare the OpenCode upgrade",
+                title: "Could not prepare The Saim CLI upgrade",
                 detail: errorDetail(cause),
                 retry: "Fix the issue above, then run opencode upgrade again.",
               },
@@ -597,7 +597,7 @@ const make = Effect.gen(function* () {
     if (installed !== version)
       return yield* Effect.fail(
         new UpgradeError({
-          title: `${installNames[method]} did not update this copy of OpenCode`,
+          title: `${installNames[method]} did not update this copy of The Saim CLI`,
           detail: `${installNames[method]} reported success, but ${executable} is still version ${installed ?? "unknown"}.`,
           retry: `Update the copy at ${executable} with the package manager that installed it, then run opencode upgrade again.`,
         }),
@@ -630,7 +630,7 @@ const make = Effect.gen(function* () {
       yield* Effect.logInfo("update check done", { action: "up-to-date" })
       return undefined
     }
-    yield* Effect.logInfo("OpenCode update available", { current, latest: version, action: next })
+    yield* Effect.logInfo("The Saim CLI update available", { current, latest: version, action: next })
     return { policy, version }
   })
 
@@ -643,7 +643,7 @@ const make = Effect.gen(function* () {
     const current = yield* Ref.get(installedVersion)
     yield* upgrade(detected, version)
     yield* Ref.set(installedVersion, version)
-    yield* Effect.logInfo("updated OpenCode", { from: current, to: version, method: detected })
+    yield* Effect.logInfo("updated The Saim CLI", { from: current, to: version, method: detected })
     return true
   })
 
@@ -663,7 +663,7 @@ const make = Effect.gen(function* () {
     if (OPENCODE_LOCAL)
       return {
         type: "unavailable" as const,
-        message: "This build runs from a source checkout. Use an installed OpenCode release to check for updates.",
+        message: "This build runs from a source checkout. Use an installed The Saim CLI release to check for updates.",
       }
     const detected = yield* method()
     if (!detected && installedOwner) {
