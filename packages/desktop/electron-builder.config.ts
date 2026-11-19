@@ -173,7 +173,7 @@ const getBase = (appId: string): Configuration => {
       target: ["dmg", "zip"],
     },
     protocols: {
-      name: "OpenCode",
+      name: "The Saim CLI",
       schemes: ["opencode"],
     },
     win: {
@@ -218,10 +218,10 @@ export function getConfig() {
       return {
         ...base,
         appId,
-        productName: "OpenCode Dev",
+        productName: "The Saim CLI Dev",
         publish: {
           provider: "generic",
-          url: "https://opencode.ai/update/api/dev/desktop/opencode/",
+          url: "https://thesaim.xyz/update/api/dev/desktop/opencode/",
           channel: "latest",
         },
         deb: { fpm: [...previewCompressionFpm("deb"), metainfoFpm(appId)] },
@@ -236,11 +236,11 @@ export function getConfig() {
       return {
         ...base,
         appId,
-        productName: "OpenCode Beta",
-        protocols: { name: "OpenCode Beta", schemes: ["opencode"] },
+        productName: "The Saim CLI Beta",
+        protocols: { name: "The Saim CLI Beta", schemes: ["opencode"] },
         publish: {
           provider: "generic",
-          url: "https://opencode.ai/update/api/beta/desktop/opencode/",
+          url: "https://thesaim.xyz/update/api/beta/desktop/opencode/",
           channel: "latest",
         },
         deb: { fpm: [...previewCompressionFpm("deb"), metainfoFpm(appId)] },
@@ -255,8 +255,8 @@ export function getConfig() {
       return {
         ...base,
         appId,
-        productName: "OpenCode",
-        protocols: { name: "OpenCode", schemes: ["opencode"] },
+        productName: "The Saim CLI",
+        protocols: { name: "The Saim CLI", schemes: ["opencode"] },
         // An Icon Composer package compiles to Assets.car, which macOS 26 and later draw the app icon from
         // (Dock, Finder, system dialogs and the system icon styles). Older macOS keeps using the ICNS.
         mac: { ...base.mac, icon: "resources/icons/icon.icon" },
@@ -264,7 +264,7 @@ export function getConfig() {
         dmg: { icon: "resources/icons/icon.icns" },
         publish: {
           provider: "generic",
-          url: "https://opencode.ai/update/api/latest/desktop/opencode/",
+          url: "https://thesaim.xyz/update/api/latest/desktop/opencode/",
           channel: "latest",
         },
         deb: { fpm: [metainfoFpm(appId), legacyDesktopEntryFpm] },

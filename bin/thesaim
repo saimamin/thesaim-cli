@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# The Saim CLI launcher — runs the local source checkout.
+set -euo pipefail
+
+# Resolve symlinks (e.g. ~/.local/bin/thesaim -> this file) so ROOT is correct.
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ "$SOURCE" != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+ROOT="$(cd -P "$(dirname "$SOURCE")/.." && pwd)"
+export THESAIM_ROOT="$ROOT"
+
+exec bun run --cwd "$ROOT/packages/cli" src/index.ts "$@"
